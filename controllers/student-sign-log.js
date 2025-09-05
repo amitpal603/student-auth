@@ -41,7 +41,7 @@ const signUpStudent = async(req,res) => {  // sign up controller
         }
 }
 
-const loginStudent = async(req,res) => {
+const loginStudent = async(req,res) => {  // login controller
   const {email,password} = req.body
 
   try {
@@ -74,9 +74,6 @@ const loginStudent = async(req,res) => {
 
     res.cookie("token",token,{
         httpOnly: true,
-        secure:true,
-        sameSite:"strict",
-        maxAge: '1d'
     })
 
     res.status(200).json({
@@ -88,4 +85,42 @@ const loginStudent = async(req,res) => {
     
   }
 }
-module.exports = {signUpStudent,loginStudent}
+
+const changePassword = async(req,res) => {  // change password
+        const {oldPassword , newPassword} = req.body
+        const id = req.userInfo.userId
+        try {
+            const user = await Account.findById(id)
+
+            if(!user) {
+                return res.status(404).json({
+                    success:false,
+                    message:`this id ${id} not any user`
+                })
+            }
+            const isPassword = await bcrypt.compare(oldPassword,user.password)
+
+            if(!isPassword) {
+                return res.status(400).json({
+                    success:false,
+                    message:'Wrong Password please try again 😥'
+                })
+            }
+            const salt = await bcrypt.genSalt(10)
+            const hashPassword = await bcrypt.hash(newPassword,salt)
+
+            user.password = hashPassword
+            await user.save()
+
+            res.status(200).json({
+                success:true,
+                message:'Password was change successfully 👻'
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success:false,
+                message:'Internal server Error'
+            })
+        }
+}
+module.exports = {signUpStudent,loginStudent,changePassword}
