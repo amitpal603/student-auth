@@ -5,6 +5,7 @@ const signlogRouter = require('./routers/signlogRouter')
 const studentRouteAuth = require('./routers/studentRouteAuth')
 const adminAuthRoutes = require('./routers/adminAuthRotes')
 const superAdminRoutes = require('./routers/superAdminRoutes')
+const imageRoutes = require('./routers/imageRoutes')
 
 
 connectDB()
@@ -14,6 +15,7 @@ app.use('/account',signlogRouter)
 app.use('/auth',studentRouteAuth)
 app.use('/auth',adminAuthRoutes)
 app.use('/auth',superAdminRoutes)
+app.use('/image',imageRoutes)
 
 app.get('/',(req,res) => {
     return res.status(200).json({
